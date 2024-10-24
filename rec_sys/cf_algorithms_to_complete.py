@@ -59,7 +59,7 @@ def centered_cosine_sim(u, v):
 
 
 # The input vector and matrix are sparse with all the nan replaced by 0
-def fast_centered_cosine_sim(utility_matrix: sp.csr_matrix, vector, axis=0):
+def fast_centered_cosine_sim(utility_matrix: sp.csr_matrix, vector, axis=0) -> sp.csr_matrix:
     # Process the utility matrix and vector (if necessary) with NaN entries
     _utility_matrix = center_for_sparse(utility_matrix)
     _vector         = center_for_sparse(vector)
@@ -84,22 +84,20 @@ def rate_all_items_for_sparse(orig_utility_matrix: sp.csr_matrix, user_index, ne
     similarities = fast_centered_cosine_sim(orig_utility_matrix, user_col)
 
     def rate_one_item(item_index):
-        # If the user has already rated the item, return the rating
         if orig_utility_matrix[item_index, user_index] != 0:
             return orig_utility_matrix[item_index, user_index]
 
-        # Find the indices of users who rated the item
         users_who_rated = orig_utility_matrix[item_index, :].nonzero()[1]
-        # From those, get indices of users with the highest similarity (watch out: result indices are rel. to users_who_rated)
         best_among_who_rated = similarities[users_who_rated].toarray()[:, 0].argsort()
-        # Select top neighborhood_size of them
         best_among_who_rated = best_among_who_rated[-neighborhood_size:]
-        # Convert the indices back to the original utility matrix indices
         best_among_who_rated = users_who_rated[best_among_who_rated]
-        best_among_who_rated = best_among_who_rated[best_among_who_rated.nonzero()]
-        # print(f"similarities among who rated for {similarities[item_index, :]}", best_among_who_rated)
+        # Eliminate entries where similarity is nan
+        best_among_who_rated = np.array([
+             index
+                for index in best_among_who_rated
+                if not np.isnan(similarities[index].toarray())
+        ])
         if best_among_who_rated.size > 0:
-            # Compute the rating of the item
             nearest_sim = similarities[best_among_who_rated]
             rating_of_item = orig_utility_matrix[item_index, best_among_who_rated].dot(nearest_sim) / sum(abs(nearest_sim))
         else:
@@ -109,7 +107,6 @@ def rate_all_items_for_sparse(orig_utility_matrix: sp.csr_matrix, user_index, ne
 
     num_items = orig_utility_matrix.shape[0]
 
-    # Get all ratings
     ratings = list(map(rate_one_item, range(num_items)))
     return ratings
 
