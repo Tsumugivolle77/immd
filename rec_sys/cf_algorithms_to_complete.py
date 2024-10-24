@@ -34,6 +34,27 @@ def fast_cosine_sim(utility_matrix, vector, axis=0):
     return scaled
 
 
+def centered_cosine_sim(u, v):
+    u = center_and_nan_to_zero(u)
+    v = center_and_nan_to_zero(v)
+    return np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v))
+
+
+def fast_centered_cosine_sim(utility_matrix, vector, axis=0):
+    # Process the utility matrix with NaN entries
+    utility_matrix = center_and_nan_to_zero(utility_matrix)
+    vector = center_and_nan_to_zero(vector)
+    """ Compute the cosine similarity between the matrix and the vector"""
+    # Compute the norms of each column
+    norms = np.linalg.norm(utility_matrix, axis=axis)
+    um_normalized = utility_matrix / norms
+    # Compute the dot product of transposed normalized matrix and the vector
+    dot = um_normalized.transpose().dot(vector)
+    # Scale by the vector norm
+    scaled = dot / np.linalg.norm(vector)
+    return scaled
+
+
 # Implement the CF from the lecture 1
 def rate_all_items(orig_utility_matrix, user_index, neighborhood_size):
     print(f"\n>>> CF computation for UM w/ shape: "
