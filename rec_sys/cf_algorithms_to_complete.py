@@ -3,9 +3,6 @@
 
 import numpy as np
 import scipy.sparse as sp
-from numpy.ma.core import nonzero
-from scipy.sparse import csr_matrix
-
 
 def complete_code(message):
     raise Exception(f"Please complete the code: {message}")
@@ -38,7 +35,7 @@ def fast_cosine_sim(utility_matrix, vector, axis=0):
     return scaled
 
 
-def center_for_sparse(matrix: sp.csr_matrix):
+def center_for_sparse(matrix: sp.csr_matrix) -> sp.csr_matrix:
     matrix_centered = matrix.copy()
     _, cols = matrix_centered.get_shape()
     for i in range(cols):
@@ -52,10 +49,10 @@ def center_for_sparse(matrix: sp.csr_matrix):
 
 
 # The input vectors are sparse with all the nan replaced by 0
-def centered_cosine_sim(u, v):
+def centered_cosine_sim(u: sp.csr_matrix, v: sp.csr_matrix):
     _u = center_for_sparse(u)
     _v = center_for_sparse(v)
-    return np.dot(_u, _v) / (np.linalg.norm(_u) * np.linalg.norm(_v))
+    return _u.transpose().dot(_v) / (sp.linalg.norm(_u) * sp.linalg.norm(_v))
 
 
 # The input vector and matrix are sparse with all the nan replaced by 0

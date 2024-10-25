@@ -96,5 +96,5 @@ if __name__ == '__main__':
 
     # print(rate_all_items(um_lecture, 0, 2))
     # print(rate_all_items_for_sparse(um_lecture_sp, 0, 2))
-    # print(rate_all_items(um_movielens, 0, 2))
-    print(rate_all_items_for_sparse(um_movielens_sp, 0, 2))
+    rate_all_items(um_movielens, 0, 2)
+    # print(rate_all_items_for_sparse(um_movielens_sp, 0, 2))
