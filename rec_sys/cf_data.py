@@ -4,6 +4,10 @@
 import numpy as np
 import polars as pl
 import pandas as pd
+import scipy.sparse as sp
+
+from rec_sys.cf_algorithms_to_complete import rate_all_items_for_sparse, center_and_nan_to_zero, center_for_sparse
+
 
 # Routines to load MovieLens data and convert it to utility matrix
 
@@ -80,10 +84,3 @@ def get_um_by_name(config, dataset_name):
         return np.asarray(um_lecture)
     else:
         raise ValueError(f"Unknown dataset name: {dataset_name}")
-
-
-if __name__ == '__main__':
-    from cf_config import config
-
-    um_movielens = get_um_by_name(config, "movielens")
-    um_lecture = get_um_by_name(config, "lecture_1")
