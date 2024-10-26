@@ -1,2 +1,2 @@
 # IMMD
-My solution to IMMD course opened in my Uni.
+My solution to IMMD course taught in my Uni.
