@@ -73,8 +73,10 @@ def fast_centered_cosine_sim(utility_matrix: sp.csr_matrix, vector, axis=0) -> s
 
 # Implement the CF from the lecture 2 for sparse utility matrix
 def rate_all_items_for_sparse(orig_utility_matrix: sp.csr_matrix, user_index, neighborhood_size):
+    from sys import getsizeof
     print(f"\n>>> CF computation for Sparse UM w/ shape: "
-          + f"{orig_utility_matrix.shape}, user_index: {user_index}, neighborhood_size: {neighborhood_size}\n")
+          + f"{orig_utility_matrix.get_shape()}, user_index: {user_index}, neighborhood_size: {neighborhood_size},"
+          + f"memory usage: {(getsizeof(orig_utility_matrix))/1024**2}MB\n")
 
     user_col = orig_utility_matrix[:, user_index]
     # Compute the cosine similarity between the user and all other users
