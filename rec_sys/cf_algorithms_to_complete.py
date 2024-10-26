@@ -4,6 +4,7 @@
 import numpy as np
 import scipy.sparse as sp
 
+
 def complete_code(message):
     raise Exception(f"Please complete the code: {message}")
     return None
@@ -38,12 +39,13 @@ def fast_cosine_sim(utility_matrix, vector, axis=0):
 def center_for_sparse(matrix: sp.csr_matrix) -> sp.csr_matrix:
     matrix_centered = matrix.copy()
     _, cols = matrix_centered.get_shape()
-    for i in range(cols):
-        this_col = matrix_centered.getcol(i)
+
+    for col in range(cols):
+        this_col = matrix.getcol(col)
         nonzeros = this_col.nonzero()
         mean_v = this_col[nonzeros].mean()
         this_col[nonzeros] -= mean_v
-        matrix_centered[:, i] = this_col
+        matrix_centered[:, col] = this_col
 
     return matrix_centered
 
@@ -72,7 +74,7 @@ def fast_centered_cosine_sim(utility_matrix: sp.csr_matrix, vector, axis=0) -> s
 
 
 # Implement the CF from the lecture 2 for sparse utility matrix
-def rate_all_items_for_sparse(orig_utility_matrix: sp.csr_matrix, user_index, neighborhood_size):
+def rate_all_items_for_sparse(orig_utility_matrix: sp.csr_matrix, user_index, neighborhood_size) -> np.array:
     from sys import getsizeof
     print(f"\n>>> CF computation for Sparse UM w/ shape: "
           + f"{orig_utility_matrix.get_shape()}, user_index: {user_index}, neighborhood_size: {neighborhood_size},"
@@ -98,7 +100,7 @@ def rate_all_items_for_sparse(orig_utility_matrix: sp.csr_matrix, user_index, ne
         ])
         if best_among_who_rated.size > 0:
             nearest_sim = similarities[best_among_who_rated]
-            rating_of_item = orig_utility_matrix[item_index, best_among_who_rated].dot(nearest_sim) / sum(abs(nearest_sim))
+            rating_of_item = (orig_utility_matrix[item_index, best_among_who_rated].dot(nearest_sim) / sum(abs(nearest_sim)))[0, 0]
         else:
             rating_of_item = np.nan
         print(f"item_idx: {item_index}, neighbors: {best_among_who_rated}, rating: {rating_of_item}")
@@ -150,3 +152,48 @@ def rate_all_items(orig_utility_matrix, user_index, neighborhood_size):
     ratings = list(map(rate_one_item, range(num_items)))
     return ratings
 
+# For exercise 4
+# Get the indices of users who rated the items
+def get_rated_by(matrix: sp.csr_matrix) -> np.array:
+    rows, _ = matrix.shape
+    rated_by = [matrix.getrow(row).nonzero()[1] for row in range(rows)]
+    return rated_by
+
+# rate all items implemented by Scale-Aware
+def rate_all_items_plusplus(
+    user_cols: sp.csr_matrix,
+    rated_by: sp.csr_matrix,
+    user_index: int,
+    neighborhood_size: int
+) -> np.array:
+    from sys import getsizeof
+    print(f"\n>>> CF computation for Sparse UM by means of Scale-Aware Algorithm")
+    user_col = user_cols[:, user_index]
+
+    def rate_one_item(to_rate: int):
+        if user_col[to_rate] != 0:
+            return user_col[to_rate, 0]
+
+        rated_reindex = np.array(range(rated_by[to_rate].shape[0]))
+        rated_users   = user_cols[:, rated_by[to_rate]]
+        similarities  = fast_centered_cosine_sim(rated_users, user_col)
+
+        best_among_who_rated = similarities.toarray()[:, 0].argsort()
+        best_among_who_rated = best_among_who_rated[-neighborhood_size:]
+        best_among_who_rated = rated_reindex[best_among_who_rated]
+        best_among_who_rated = np.array([
+             index
+                for index in best_among_who_rated
+                if not np.isnan(similarities[index].toarray())
+        ])
+        if best_among_who_rated.size > 0:
+            nearest_sim = similarities[best_among_who_rated]
+            rating_of_item = (rated_users[to_rate, best_among_who_rated].dot(nearest_sim) / sum(abs(nearest_sim)))[0, 0]
+        else:
+            rating_of_item = np.nan
+        print(f"item_idx: {to_rate}, neighbors: {best_among_who_rated}, rating: {rating_of_item}")
+        return rating_of_item
+
+    rows, _ = user_col.get_shape()
+    ratings = list(map(rate_one_item, range(rows)))
+    return ratings
