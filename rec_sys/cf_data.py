@@ -84,17 +84,3 @@ def get_um_by_name(config, dataset_name):
         return np.asarray(um_lecture)
     else:
         raise ValueError(f"Unknown dataset name: {dataset_name}")
-
-
-if __name__ == '__main__':
-    from cf_config import config
-    from cf_algorithms_to_complete import rate_all_items
-    um_movielens    = read_movielens_file_and_convert_to_um(config.file_path, max_rows=config.max_rows)
-    um_movielens_sp = sp.csr_matrix(np.nan_to_num(um_movielens))
-    # um_lecture    = get_um_by_name(config, 'lecture_1')
-    # um_lecture_sp = sp.csr_matrix(np.nan_to_num(get_um_by_name(config, 'lecture_1')))
-
-    # print(rate_all_items(um_lecture, 0, 2))
-    # print(rate_all_items_for_sparse(um_lecture_sp, 0, 2))
-    rate_all_items(um_movielens, 0, 2)
-    # print(rate_all_items_for_sparse(um_movielens_sp, 0, 2))
