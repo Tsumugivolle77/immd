@@ -4,8 +4,8 @@ import numpy as np
 import scipy.sparse as sp
 import cf_algorithms_to_complete as cfa
 from sklearn.metrics.pairwise import cosine_similarity
-import cf_data as cfd
-from cf_config import config
+import data_util as cfd
+import config
 from rec_sys.cf_algorithms_to_complete import get_rated_by
 
 # test exercise 1, 3, 4
@@ -13,7 +13,7 @@ def test_rate_all_items(which="lecture", exercise=1):
     print(f">>> Testing codes for exercise {exercise} working on {which} data")
 
     if which == "lecture":
-        um_lecture = cfd.get_um_by_name(config, 'lecture_1')
+        um_lecture = cfd.get_um_by_name(config.ConfigCf, 'lecture_1')
 
         if exercise == 1:
             print(cfa.rate_all_items(um_lecture, 0, 2))
@@ -28,7 +28,7 @@ def test_rate_all_items(which="lecture", exercise=1):
             raise exception(f"This test is not designed for exercise {exercise}")
 
     elif which == "movielens":
-        um_movielens    = cfd.read_movielens_file_and_convert_to_um(config.file_path, max_rows=config.max_rows)
+        um_movielens    = cfd.read_movielens_file_and_convert_to_um(config.ConfigCf.file_path, max_rows=config.ConfigCf.max_rows)
 
         if exercise == 1:
             print(cfa.rate_all_items(um_movielens, 0, 2))
@@ -81,9 +81,9 @@ def test_get_rated_by():
 
 if __name__ == '__main__':
     # test exercise 1, 3
-    test_rate_all_items("lecture", 1)
-    test_rate_all_items("lecture", 3)
-    test_rate_all_items("lecture", 4)
+    test_rate_all_items("movielens", 4)
+    # test_rate_all_items("lecture", 3)
+    # test_rate_all_items("lecture", 4)
 
     # test exercise 2
     # test_centered_cosine_similarity(2)

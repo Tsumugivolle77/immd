@@ -40,6 +40,7 @@ def center_for_sparse(matrix: sp.csr_matrix) -> sp.csr_matrix:
     matrix_centered = matrix.copy()
     _, cols = matrix_centered.get_shape()
 
+    # for-loop is too slow in Python, need improvements
     for col in range(cols):
         this_col = matrix.getcol(col)
         nonzeros = this_col.nonzero()
