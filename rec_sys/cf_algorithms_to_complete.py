@@ -175,13 +175,13 @@ def rate_all_items_plusplus(
         if user_col[to_rate] != 0:
             return user_col[to_rate, 0]
 
-        rated_reindex = np.array(range(rated_by[to_rate].shape[0]))
+        # rated_reindex = np.array(range(rated_by[to_rate].shape[0]))
         rated_users   = user_cols[:, rated_by[to_rate]]
         similarities  = fast_centered_cosine_sim(rated_users, user_col)
 
         best_among_who_rated = similarities.toarray()[:, 0].argsort()
         best_among_who_rated = best_among_who_rated[-neighborhood_size:]
-        best_among_who_rated = rated_reindex[best_among_who_rated]
+        # best_among_who_rated = rated_reindex[best_among_who_rated]
         best_among_who_rated = np.array([
              index
                 for index in best_among_who_rated
@@ -192,7 +192,7 @@ def rate_all_items_plusplus(
             rating_of_item = (rated_users[to_rate, best_among_who_rated].dot(nearest_sim) / sum(abs(nearest_sim)))[0, 0]
         else:
             rating_of_item = np.nan
-        print(f"item_idx: {to_rate}, neighbors: {best_among_who_rated}, rating: {rating_of_item}")
+        print(f"item_idx: {to_rate}, neighbors: {rated_by[to_rate][best_among_who_rated]}, rating: {rating_of_item}")
         return rating_of_item
 
     rows, _ = user_col.get_shape()

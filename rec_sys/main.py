@@ -1,5 +1,4 @@
 from sys import exception
-
 import numpy as np
 import scipy.sparse as sp
 import cf_algorithms_to_complete as cfa
@@ -16,29 +15,29 @@ def test_rate_all_items(which="lecture", exercise=1):
         um_lecture = cfd.get_um_by_name(config.ConfigCf, 'lecture_1')
 
         if exercise == 1:
-            print(cfa.rate_all_items(um_lecture, 0, 2))
+            cfa.rate_all_items(um_lecture, 0, 2)
         elif exercise == 3:
             um_lecture_sp = sp.csr_matrix(np.nan_to_num(um_lecture))
-            print(cfa.rate_all_items_for_sparse(um_lecture_sp, 0, 2))
+            cfa.rate_all_items_for_sparse(um_lecture_sp, 0, 2)
         elif exercise == 4:
             um_lecture_sp = sp.csr_matrix(np.nan_to_num(um_lecture))
             rated_by = get_rated_by(um_lecture_sp)
-            print(cfa.rate_all_items_plusplus(um_lecture_sp, rated_by, 0, 2))
+            cfa.rate_all_items_plusplus(um_lecture_sp, rated_by, 0, 2)
         else:
             raise exception(f"This test is not designed for exercise {exercise}")
 
     elif which == "movielens":
-        um_movielens    = cfd.read_movielens_file_and_convert_to_um(config.ConfigCf.file_path, max_rows=config.ConfigCf.max_rows)
+        um_movielens = cfd.read_movielens_file_and_convert_to_um(config.ConfigCf.file_path, max_rows=config.ConfigCf.max_rows)
 
         if exercise == 1:
-            print(cfa.rate_all_items(um_movielens, 0, 2))
+            cfa.rate_all_items(um_movielens, 0, 2)
         elif exercise == 3:
             um_movielens_sp = sp.csr_matrix(np.nan_to_num(um_movielens))
-            print(cfa.rate_all_items_for_sparse(um_movielens_sp, 0, 2))
+            cfa.rate_all_items_for_sparse(um_movielens_sp, 0, 2)
         elif exercise == 4:
             um_movielens_sp = sp.csr_matrix(np.nan_to_num(um_movielens))
             rated_by = get_rated_by(um_movielens_sp)
-            print(cfa.rate_all_items_plusplus(um_movielens_sp, rated_by, 0, 2))
+            cfa.rate_all_items_plusplus(um_movielens_sp, rated_by, 0, 2)
         else:
             raise exception(f"This test is not designed for exercise {exercise}")
 
